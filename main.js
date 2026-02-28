@@ -1,6 +1,6 @@
 // =============================================
-// BERLIN TECHNO SCROLLYTELLING — CORE ENGINE
-// No Lenis. Pure GSAP ScrollTrigger + Native Scroll.
+// BERLIN TECHNO SCROLLYTELLING — CORE ENGINE v2
+// GSAP ScrollTrigger + Native Scroll + 8K Canvas
 // =============================================
 console.log("INITIALIZING VOID...");
 
@@ -19,26 +19,26 @@ const config = {
 // --- STATE ---
 const state = {
     currentFrame: 1,
-    targetFrame: 1,
     loadedImages: new Map(),
     isPreloading: true,
     canvasMetrics: { width: 0, height: 0 }
 };
 
-// Memory Management
+// Memory Management — wider window for smoother scrubbing
 const MEMORY_AHEAD = 80;
 const MEMORY_BEHIND = 40;
 
-// --- DOM ELEMENTS ---
+// --- DOM ---
 const canvas = document.getElementById(config.canvasId);
 const ctx = canvas.getContext('2d', { alpha: false });
 const preloader = document.getElementById(config.loaderId);
 const progressBar = document.querySelector('.progress-bar');
 const progressPercent = document.querySelector('.progress-percent');
 
-// --- CANVAS SIZING ---
+// --- CANVAS SIZING (8K SUPPORT) ---
 function resizeCanvas() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Allow up to 4x DPR for 8K-class rendering on high-res displays
+    const dpr = Math.min(window.devicePixelRatio || 1, 4);
     const w = window.innerWidth;
     const h = window.innerHeight;
 
@@ -48,6 +48,10 @@ function resizeCanvas() {
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Enable high-quality image smoothing for 8K scaling
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     drawFrame(Math.round(state.currentFrame));
 }
@@ -105,11 +109,10 @@ function loadImage(index) {
         }
 
         const img = new Image();
-        state.loadedImages.set(index, img); // Reserve slot immediately
+        state.loadedImages.set(index, img);
 
         img.onload = () => resolve(img);
         img.onerror = () => {
-            console.warn(`Missing: ${config.imagePath(index)}`);
             state.loadedImages.delete(index);
             resolve(null);
         };
@@ -123,7 +126,6 @@ function manageMemory(currentIndex) {
     const minKeep = Math.max(1, currentIndex - MEMORY_BEHIND);
     const maxKeep = Math.min(config.frameCount, currentIndex + MEMORY_AHEAD);
 
-    // Unload distant frames
     for (const [key, img] of state.loadedImages.entries()) {
         if (key < minKeep || key > maxKeep) {
             if (img && img.src) {
@@ -133,7 +135,6 @@ function manageMemory(currentIndex) {
         }
     }
 
-    // Load nearby frames
     for (let i = minKeep; i <= maxKeep; i++) {
         if (!state.loadedImages.has(i)) {
             loadImage(i);
@@ -158,19 +159,20 @@ async function executePreload() {
 
     await Promise.all(promises);
 
-    // Hide preloader
     preloader.classList.add('hidden');
-    setTimeout(() => { if (preloader.parentNode) preloader.parentNode.removeChild(preloader); }, 1000);
+    setTimeout(() => { if (preloader.parentNode) preloader.parentNode.removeChild(preloader); }, 1200);
 
     state.isPreloading = false;
 
-    // Boot
     resizeCanvas();
     renderLoop();
     initScrollTrigger();
+    initRevealAnimations();
+    initCounters();
+    initTicketCards();
 }
 
-// --- SCROLL TRIGGER (NO LENIS) ---
+// --- SCROLL TRIGGER ---
 function initScrollTrigger() {
     gsap.to(state, {
         currentFrame: config.frameCount,
@@ -184,6 +186,80 @@ function initScrollTrigger() {
             invalidateOnRefresh: true,
         }
     });
+}
+
+// --- GSAP SCROLL REVEAL ANIMATIONS ---
+function initRevealAnimations() {
+    const elements = document.querySelectorAll('.anim-reveal');
+
+    elements.forEach((el) => {
+        gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                end: "top 50%",
+                toggleActions: "play none none reverse",
+            }
+        });
+    });
+}
+
+// --- COUNTER ANIMATION ---
+function initCounters() {
+    const counters = document.querySelectorAll('.counter');
+
+    counters.forEach((counter) => {
+        const target = parseInt(counter.getAttribute('data-target'), 10);
+
+        gsap.to({ val: 0 }, {
+            val: target,
+            duration: 2,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: counter,
+                start: "top 80%",
+                toggleActions: "play none none reverse",
+            },
+            onUpdate: function () {
+                counter.textContent = Math.round(this.targets()[0].val);
+            }
+        });
+    });
+}
+
+// --- TICKET CARD SELECTION ---
+function initTicketCards() {
+    const cards = document.querySelectorAll('.ticket-card');
+
+    cards.forEach((card) => {
+        card.addEventListener('click', () => {
+            cards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+        });
+    });
+
+    // CTA button feedback
+    const ctaBtn = document.getElementById('cta-get-stamped');
+    if (ctaBtn) {
+        ctaBtn.addEventListener('click', () => {
+            const activeCard = document.querySelector('.ticket-card.active');
+            const tier = activeCard ? activeCard.getAttribute('data-tier') : 'standard';
+
+            ctaBtn.textContent = 'STAMPED ✓';
+            ctaBtn.style.background = '#FF3300';
+            ctaBtn.style.borderColor = '#FF3300';
+
+            setTimeout(() => {
+                ctaBtn.textContent = 'GET STAMPED';
+                ctaBtn.style.background = '';
+                ctaBtn.style.borderColor = '';
+            }, 2000);
+        });
+    }
 }
 
 // --- BOOTSTRAP ---

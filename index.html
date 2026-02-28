@@ -3,17 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BERLIN // 04-20</title>
-    <meta name="description" content="Berlin Techno Experience. A scrollytelling journey into the void.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>BERLIN // 04-20 — Into The Void</title>
+    <meta name="description"
+        content="Berlin Techno Experience. April 20, 2026. Tresor Underground. A scrollytelling journey into the void.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,700;0,900;1,400&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100;0,300;0,400;0,700;0,900;1,400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=8">
 
     <!-- GSAP & ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -31,7 +33,8 @@
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <h1 class="loader-text">INITIALIZING SEQUENCE</h1>
+            <div class="loader-eyebrow">BERLIN // 04-20</div>
+            <h1 class="loader-text">ENTERING<br>THE VOID</h1>
             <div class="progress-bar-container">
                 <div class="progress-bar"></div>
             </div>
@@ -42,40 +45,197 @@
     <!-- Scrollytelling Content -->
     <main id="scroll-container">
 
+        <!-- ═══════════════════════════════════════════
+             ACT 01 — HERO
+        ═══════════════════════════════════════════ -->
         <section class="panel panel-hero">
-            <div class="panel-content">
+            <div class="panel-content anim-reveal">
                 <div class="badge">ACT_01</div>
                 <h1 class="headline">INTO<br>THE VOID</h1>
                 <p class="subtext">BERLIN. 22:00. THE BASS DROPS.</p>
             </div>
         </section>
 
+        <!-- ═══════════════════════════════════════════
+             EVENT DATA STRIP
+        ═══════════════════════════════════════════ -->
+        <section class="data-strip">
+            <div class="data-strip-inner">
+                <div class="data-cell anim-reveal">
+                    <span class="data-label">DATE</span>
+                    <span class="data-value">20.04.26</span>
+                </div>
+                <div class="data-cell anim-reveal">
+                    <span class="data-label">DOORS</span>
+                    <span class="data-value">22:00</span>
+                </div>
+                <div class="data-cell anim-reveal">
+                    <span class="data-label">CLOSE</span>
+                    <span class="data-value">08:00</span>
+                </div>
+                <div class="data-cell anim-reveal">
+                    <span class="data-label">BPM</span>
+                    <span class="data-value counter" data-target="145">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             ACT 02 — KINETIC
+        ═══════════════════════════════════════════ -->
         <section class="panel panel-kinetic">
-            <div class="panel-content right-align">
+            <div class="panel-content right-align anim-reveal">
                 <div class="badge">ACT_02</div>
                 <h1 class="headline">PURE<br>KINETIC</h1>
                 <p class="subtext">145 BPM. NO STOPPING.</p>
             </div>
         </section>
 
+        <!-- ═══════════════════════════════════════════
+             VENUE INFO
+        ═══════════════════════════════════════════ -->
+        <section class="info-section">
+            <div class="info-grid">
+                <div class="info-block anim-reveal">
+                    <div class="info-icon">⬡</div>
+                    <h2 class="info-title">THE BUNKER</h2>
+                    <p class="info-body">Deep beneath Berlin's concrete surface lies a decommissioned power station.
+                        Bare walls. Steel beams. Zero natural light. This is where the frequency lives.</p>
+                </div>
+                <div class="info-block anim-reveal">
+                    <div class="info-icon">◈</div>
+                    <h2 class="info-title">THE SYSTEM</h2>
+                    <p class="info-body">Custom-built Funktion-One Evo 7 rig. 80,000 watts of pure pressure. Sub
+                        frequencies you feel in your sternum before your ears register them.</p>
+                </div>
+                <div class="info-block anim-reveal">
+                    <div class="info-icon">▣</div>
+                    <h2 class="info-title">THE RITUAL</h2>
+                    <p class="info-body">No phones. No cameras. No VIP. Just bodies, bass, and the dark. When you enter,
+                        you surrender to the frequency. There is no outside.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             ACT 03 — PULSE
+        ═══════════════════════════════════════════ -->
         <section class="panel panel-pulse">
-            <div class="panel-content">
+            <div class="panel-content anim-reveal">
                 <div class="badge">ACT_03</div>
                 <h1 class="headline">PULSE<br>STATE</h1>
                 <p class="subtext">WE SWEAT CONCRETE.</p>
             </div>
         </section>
 
-        <section class="panel panel-exit">
-            <div class="panel-content center-align">
-                <h1 class="headline">NO EXIT</h1>
-                <button id="cta-get-stamped" class="cta-button">GET STAMPED</button>
+        <!-- ═══════════════════════════════════════════
+             LINEUP
+        ═══════════════════════════════════════════ -->
+        <section class="lineup-section">
+            <div class="lineup-header anim-reveal">
+                <div class="badge">TRANSMISSION</div>
+                <h2 class="section-title">FREQUENCY<br>OPERATORS</h2>
+            </div>
+            <div class="lineup-grid">
+                <div class="lineup-card anim-reveal">
+                    <span class="lineup-time">22:00 — 00:00</span>
+                    <h3 class="lineup-name">VØRTEX</h3>
+                    <span class="lineup-tag">HYPNOTIC TECHNO</span>
+                </div>
+                <div class="lineup-card anim-reveal">
+                    <span class="lineup-time">00:00 — 02:00</span>
+                    <h3 class="lineup-name">KÄLTE</h3>
+                    <span class="lineup-tag">INDUSTRIAL</span>
+                </div>
+                <div class="lineup-card anim-reveal">
+                    <span class="lineup-time">02:00 — 04:00</span>
+                    <h3 class="lineup-name">DRØNE</h3>
+                    <span class="lineup-tag">ACID TECHNO</span>
+                </div>
+                <div class="lineup-card anim-reveal">
+                    <span class="lineup-time">04:00 — 06:00</span>
+                    <h3 class="lineup-name">SCHWARZ</h3>
+                    <span class="lineup-tag">DARK MINIMAL</span>
+                </div>
+                <div class="lineup-card anim-reveal">
+                    <span class="lineup-time">06:00 — 08:00</span>
+                    <h3 class="lineup-name">PULS</h3>
+                    <span class="lineup-tag">AMBIENT CLOSE</span>
+                </div>
             </div>
         </section>
 
+        <!-- ═══════════════════════════════════════════
+             MANIFESTO
+        ═══════════════════════════════════════════ -->
+        <section class="manifesto-section">
+            <div class="manifesto-inner anim-reveal">
+                <div class="badge">PROTOCOL</div>
+                <h2 class="section-title">THE LAW</h2>
+                <ul class="manifesto-list">
+                    <li class="manifesto-item anim-reveal"><span class="rule-num">01</span> NO PHONES ON THE FLOOR</li>
+                    <li class="manifesto-item anim-reveal"><span class="rule-num">02</span> RESPECT THE SPACE</li>
+                    <li class="manifesto-item anim-reveal"><span class="rule-num">03</span> CONSENT IS NON-NEGOTIABLE
+                    </li>
+                    <li class="manifesto-item anim-reveal"><span class="rule-num">04</span> THE DOOR DECIDES</li>
+                    <li class="manifesto-item anim-reveal"><span class="rule-num">05</span> DRESS CODE: BLACK</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             ACT 04 — TICKET CHECKOUT
+        ═══════════════════════════════════════════ -->
+        <section class="panel panel-exit">
+            <div class="ticket-module anim-reveal">
+                <div class="badge">ADMISSION</div>
+                <h1 class="headline">NO EXIT</h1>
+                <p class="ticket-subline">SELECT YOUR ENTRY PROTOCOL</p>
+
+                <div class="ticket-options">
+                    <div class="ticket-card" data-tier="early">
+                        <div class="ticket-tier">EARLY BIRD</div>
+                        <div class="ticket-price">€25</div>
+                        <div class="ticket-detail">LIMITED — 100 UNITS</div>
+                        <div class="ticket-status">AVAILABLE</div>
+                    </div>
+                    <div class="ticket-card active" data-tier="standard">
+                        <div class="ticket-tier">STANDARD</div>
+                        <div class="ticket-price">€35</div>
+                        <div class="ticket-detail">GENERAL ADMISSION</div>
+                        <div class="ticket-status">AVAILABLE</div>
+                    </div>
+                    <div class="ticket-card" data-tier="vip">
+                        <div class="ticket-tier">VOID PASS</div>
+                        <div class="ticket-price">€60</div>
+                        <div class="ticket-detail">ALL NIGHT + AFTERHOURS</div>
+                        <div class="ticket-status">12 LEFT</div>
+                    </div>
+                </div>
+
+                <button id="cta-get-stamped" class="cta-button">GET STAMPED</button>
+                <p class="ticket-fine-print">NO REFUNDS. NO EXCEPTIONS. SEE YOU IN THE DARK.</p>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════
+             FOOTER
+        ═══════════════════════════════════════════ -->
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand">BERLIN // 04-20</div>
+                <div class="footer-links">
+                    <a href="#">INSTAGRAM</a>
+                    <a href="#">SOUNDCLOUD</a>
+                    <a href="#">RESIDENT ADVISOR</a>
+                </div>
+                <div class="footer-copy">© 2026 VOID KOLLEKTIV. ALL FREQUENCIES RESERVED.</div>
+            </div>
+        </footer>
+
     </main>
 
-    <script src="main.js?v=7"></script>
+    <script src="main.js?v=8"></script>
 </body>
 
 </html>

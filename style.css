@@ -1,12 +1,15 @@
 /* =============================================
    BERLIN TECHNO SCROLLYTELLING — BRUTALIST CSS
+   Full Rebuild v2 — Mobile-First, 8K Canvas
    ============================================= */
 
 :root {
     --black: #000000;
     --grey: #E5E5E5;
     --off-white: #F4F4F4;
+    --accent: #FF3300;
     --border-thickness: clamp(3px, 0.5vw, 6px);
+    --font: 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
 }
 
 * {
@@ -17,6 +20,7 @@
 
 html {
     overflow-x: hidden;
+    scroll-behavior: auto;
 }
 
 body {
@@ -24,18 +28,18 @@ body {
     min-height: 100vh;
     background-color: #000;
     color: var(--off-white);
-    font-family: 'Inter Tight', sans-serif;
+    font-family: var(--font);
     font-weight: 900;
     letter-spacing: -0.03em;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
-    /* Allow native scrolling — critical for mobile */
 }
 
-/* 
- * NOISE OVERLAY
- */
+/* ═══════════════════════════════════════════
+   NOISE OVERLAY
+   ═══════════════════════════════════════════ */
 .noise-overlay {
     position: fixed;
     top: 0;
@@ -44,14 +48,14 @@ body {
     height: 100vh;
     pointer-events: none;
     z-index: 9999;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
-    opacity: 0.12;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+    opacity: 0.10;
     mix-blend-mode: overlay;
 }
 
-/* 
- * CANVAS — fixed background behind everything
- */
+/* ═══════════════════════════════════════════
+   CANVAS — 8K Support
+   ═══════════════════════════════════════════ */
 #hero-lightpass {
     position: fixed;
     top: 0;
@@ -62,22 +66,22 @@ body {
     display: block;
 }
 
-/* 
- * PRELOADER
- */
+/* ═══════════════════════════════════════════
+   PRELOADER
+   ═══════════════════════════════════════════ */
 #preloader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--off-white);
-    color: var(--black);
+    background: var(--black);
+    color: var(--off-white);
     z-index: 10000;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
+    transition: opacity 1s ease, visibility 1s ease;
 }
 
 #preloader.hidden {
@@ -88,22 +92,29 @@ body {
 
 .loader-content {
     width: 80%;
-    max-width: 600px;
+    max-width: 500px;
+}
+
+.loader-eyebrow {
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    margin-bottom: 2vh;
+    opacity: 0.5;
 }
 
 .loader-text {
-    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-size: clamp(2rem, 6vw, 4rem);
     text-transform: uppercase;
-    margin-bottom: 2vh;
-    letter-spacing: -0.05em;
-    line-height: 1;
+    margin-bottom: 3vh;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
 }
 
 .progress-bar-container {
     width: 100%;
-    height: clamp(20px, 4vw, 40px);
-    border: var(--border-thickness) solid var(--black);
-    background: transparent;
+    height: clamp(4px, 0.8vw, 6px);
+    background: rgba(255, 255, 255, 0.1);
     position: relative;
     border-radius: 0;
 }
@@ -111,29 +122,31 @@ body {
 .progress-bar {
     height: 100%;
     width: 0%;
-    background: var(--black);
+    background: var(--off-white);
     transition: width 0.05s linear;
 }
 
 .progress-percent {
-    text-align: right;
-    margin-top: 1vh;
-    font-size: clamp(1rem, 2vw, 2rem);
-    font-weight: 700;
+    text-align: left;
+    margin-top: 1.5vh;
+    font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
 }
 
-/* 
- * SCROLL CONTAINER
- */
+/* ═══════════════════════════════════════════
+   SCROLL CONTAINER
+   ═══════════════════════════════════════════ */
 #scroll-container {
     position: relative;
     z-index: 10;
     width: 100%;
 }
 
-/* 
- * PANELS — each creates scrollable space for frame scrubbing
- */
+/* ═══════════════════════════════════════════
+   PANELS — Scrollytelling Frames
+   ═══════════════════════════════════════════ */
 .panel {
     position: relative;
     width: 100%;
@@ -154,19 +167,22 @@ body {
 }
 
 .panel-pulse {
-    height: 300vh;
+    height: 250vh;
     justify-content: flex-start;
     padding-top: 20vh;
 }
 
 .panel-exit {
-    height: 400vh;
+    height: 100vh;
+    min-height: 100vh;
     justify-content: center;
+    align-items: center;
+    display: flex;
 }
 
-/* 
- * PANEL CONTENT — Brutalist cards
- */
+/* ═══════════════════════════════════════════
+   PANEL CONTENT — Brutalist Cards
+   ═══════════════════════════════════════════ */
 .panel-content {
     background: var(--grey);
     color: var(--black);
@@ -176,6 +192,7 @@ body {
     width: fit-content;
     max-width: 90vw;
     box-shadow: 12px 12px 0px var(--black);
+    transition: transform 0.3s ease;
 }
 
 .right-align {
@@ -186,25 +203,23 @@ body {
 .center-align {
     align-self: center;
     text-align: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
 }
 
 .badge {
     background: var(--black);
     color: var(--off-white);
-    padding: 5px 15px;
-    font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+    padding: 4px 14px;
+    font-size: clamp(0.65rem, 1.2vw, 0.9rem);
     display: inline-block;
     margin-bottom: 2vh;
     text-transform: uppercase;
     font-weight: 700;
+    letter-spacing: 0.1em;
     border-radius: 0;
 }
 
 .headline {
-    font-size: clamp(3.5rem, 10vw, 9rem);
+    font-size: clamp(3rem, 10vw, 9rem);
     line-height: 0.85;
     text-transform: uppercase;
     letter-spacing: -0.06em;
@@ -212,59 +227,506 @@ body {
 }
 
 .subtext {
-    font-size: clamp(1rem, 2vw, 1.8rem);
+    font-size: clamp(0.85rem, 1.8vw, 1.5rem);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-/* CTA BUTTON — INK STAMP EFFECT */
-.cta-button {
-    background: transparent;
+.section-title {
+    font-size: clamp(2.5rem, 8vw, 7rem);
+    line-height: 0.85;
+    text-transform: uppercase;
+    letter-spacing: -0.06em;
+    margin-bottom: 4vh;
+}
+
+/* ═══════════════════════════════════════════
+   DATA STRIP — Event Info Bar
+   ═══════════════════════════════════════════ */
+.data-strip {
+    position: relative;
+    width: 100%;
+    padding: clamp(20px, 4vw, 50px) clamp(20px, 5vw, 60px);
+    background: var(--off-white);
     color: var(--black);
+    border-top: var(--border-thickness) solid var(--black);
+    border-bottom: var(--border-thickness) solid var(--black);
+}
+
+.data-strip-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(10px, 2vw, 30px);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.data-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+}
+
+.data-label {
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    opacity: 0.5;
+}
+
+.data-value {
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+/* ═══════════════════════════════════════════
+   INFO SECTION — Venue Details
+   ═══════════════════════════════════════════ */
+.info-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 5vw, 60px);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(15px, 3vw, 40px);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.info-block {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: clamp(20px, 3vw, 40px);
+    transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.info-block:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.info-icon {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: 2vh;
+    opacity: 0.4;
+}
+
+.info-title {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5vh;
+    text-transform: uppercase;
+}
+
+.info-body {
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    font-weight: 300;
+    line-height: 1.5;
+    letter-spacing: 0;
+    opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════
+   LINEUP SECTION
+   ═══════════════════════════════════════════ */
+.lineup-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 5vw, 60px);
+    background: var(--off-white);
+    color: var(--black);
+}
+
+.lineup-header {
+    max-width: 1200px;
+    margin: 0 auto 4vh;
+}
+
+.lineup-section .badge {
+    background: var(--black);
+    color: var(--off-white);
+}
+
+.lineup-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.lineup-card {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    align-items: baseline;
+    gap: clamp(10px, 2vw, 30px);
+    padding: clamp(15px, 2.5vw, 30px) 0;
+    border-bottom: 2px solid var(--black);
+    transition: padding-left 0.3s ease;
+}
+
+.lineup-card:first-child {
+    border-top: 2px solid var(--black);
+}
+
+.lineup-card:hover {
+    padding-left: 20px;
+}
+
+.lineup-time {
+    font-size: clamp(0.65rem, 1vw, 0.85rem);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    opacity: 0.5;
+    white-space: nowrap;
+}
+
+.lineup-name {
+    font-size: clamp(1.8rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.lineup-tag {
+    font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    background: var(--black);
+    color: var(--off-white);
+    padding: 4px 12px;
+    white-space: nowrap;
+    align-self: center;
+}
+
+/* ═══════════════════════════════════════════
+   MANIFESTO SECTION
+   ═══════════════════════════════════════════ */
+.manifesto-section {
+    position: relative;
+    width: 100%;
+    padding: clamp(40px, 8vw, 100px) clamp(20px, 5vw, 60px);
+}
+
+.manifesto-inner {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.manifesto-list {
+    list-style: none;
+}
+
+.manifesto-item {
+    font-size: clamp(1.2rem, 3vw, 2.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    padding: clamp(12px, 2vw, 25px) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: baseline;
+    gap: clamp(10px, 2vw, 25px);
+}
+
+.manifesto-item:first-child {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rule-num {
+    font-size: clamp(0.7rem, 1vw, 0.9rem);
+    font-weight: 400;
+    opacity: 0.3;
+    letter-spacing: 0.1em;
+    min-width: 2em;
+}
+
+/* ═══════════════════════════════════════════
+   TICKET MODULE
+   ═══════════════════════════════════════════ */
+.ticket-module {
+    background: var(--grey);
+    color: var(--black);
+    padding: clamp(25px, 5vw, 60px);
+    border: var(--border-thickness) solid var(--black);
+    border-radius: 0;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 16px 16px 0px var(--black);
+    text-align: center;
+}
+
+.ticket-subline {
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    margin-bottom: 4vh;
+    opacity: 0.6;
+}
+
+.ticket-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(10px, 1.5vw, 20px);
+    margin-bottom: 4vh;
+}
+
+.ticket-card {
+    border: 2px solid var(--black);
+    padding: clamp(15px, 2vw, 25px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background: transparent;
+}
+
+.ticket-card:hover,
+.ticket-card.active {
+    background: var(--black);
+    color: var(--off-white);
+}
+
+.ticket-card.active .ticket-status {
+    color: var(--accent);
+}
+
+.ticket-tier {
+    font-size: clamp(0.6rem, 1vw, 0.85rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 1vh;
+}
+
+.ticket-price {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 1vh;
+}
+
+.ticket-detail {
+    font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    margin-bottom: 1.5vh;
+}
+
+.ticket-status {
+    font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+}
+
+/* CTA BUTTON — INK STAMP */
+.cta-button {
+    background: var(--black);
+    color: var(--off-white);
     border: calc(var(--border-thickness) * 1.5) solid var(--black);
     border-radius: 0;
-    padding: clamp(15px, 3vw, 30px) clamp(30px, 6vw, 60px);
-    font-size: clamp(1.5rem, 4vw, 3rem);
+    padding: clamp(15px, 3vw, 25px) clamp(40px, 8vw, 80px);
+    font-size: clamp(1.3rem, 3vw, 2.5rem);
     font-family: inherit;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 4vh;
+    transition: all 0.25s ease;
+    margin-bottom: 2vh;
     position: relative;
     overflow: hidden;
 }
 
-.cta-button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%;
-    height: 150%;
-    background: var(--black);
-    transform: translate(-50%, -50%) scale(0) rotate(15deg);
-    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: -1;
-}
-
 .cta-button:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.02);
+}
+
+.cta-button:active {
+    transform: scale(0.98);
+}
+
+.ticket-fine-print {
+    font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════ */
+.site-footer {
+    width: 100%;
+    padding: clamp(30px, 5vw, 60px);
+    background: var(--black);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2vh;
+}
+
+.footer-brand {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.footer-links {
+    display: flex;
+    gap: clamp(15px, 3vw, 40px);
+}
+
+.footer-links a {
     color: var(--off-white);
+    text-decoration: none;
+    font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
 }
 
-.cta-button:hover::after {
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+.footer-links a:hover {
+    opacity: 1;
 }
 
-/* Mobile tweaks */
+.footer-copy {
+    font-size: clamp(0.5rem, 0.7vw, 0.65rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    opacity: 0.3;
+    width: 100%;
+    text-align: center;
+    margin-top: 2vh;
+}
+
+/* ═══════════════════════════════════════════
+   GSAP REVEAL ANIMATIONS
+   ═══════════════════════════════════════════ */
+.anim-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE — 768px and below
+   ═══════════════════════════════════════════ */
 @media (max-width: 768px) {
     .panel-content {
         box-shadow: 6px 6px 0px var(--black);
+        max-width: 95vw;
     }
 
     .panel {
+        padding: 15px;
+    }
+
+    .data-strip-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .lineup-card {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .lineup-time {
+        font-size: 0.65rem;
+    }
+
+    .lineup-tag {
+        justify-self: start;
+        font-size: 0.55rem;
+    }
+
+    .ticket-options {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .ticket-module {
+        box-shadow: 8px 8px 0px var(--black);
         padding: 20px;
+        margin: 0 15px;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .headline {
+        font-size: clamp(2.5rem, 12vw, 5rem);
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 10vw, 4rem);
+    }
+}
+
+/* ═══════════════════════════════════════════
+   SMALL MOBILE — 480px and below
+   ═══════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .panel-hero {
+        height: 120vh;
+    }
+
+    .panel-kinetic {
+        height: 160vh;
+    }
+
+    .panel-pulse {
+        height: 200vh;
+        padding-top: 15vh;
+    }
+
+    .panel-exit {
+        min-height: auto;
+        padding: 15px;
+    }
+
+    .data-strip {
+        padding: 15px;
+    }
+
+    .info-section {
+        padding: 30px 15px;
+    }
+
+    .lineup-section {
+        padding: 30px 15px;
+    }
+
+    .manifesto-section {
+        padding: 30px 15px;
     }
 }

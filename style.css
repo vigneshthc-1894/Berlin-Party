@@ -26,6 +26,7 @@ html {
 body {
     width: 100%;
     min-height: 100vh;
+    min-height: 100dvh;
     background-color: #000;
     color: var(--off-white);
     font-family: var(--font);
@@ -35,6 +36,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
 }
 
 /* ═══════════════════════════════════════════
@@ -46,6 +48,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     pointer-events: none;
     z-index: 9999;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
@@ -62,6 +65,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     z-index: -1;
     display: block;
     /* Smooth out low-res source frames */
@@ -77,6 +81,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     background: var(--black);
     color: var(--off-white);
     z-index: 10000;

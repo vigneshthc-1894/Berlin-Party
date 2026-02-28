@@ -1,6 +1,7 @@
 // =============================================
-// BERLIN TECHNO SCROLLYTELLING — CORE ENGINE v2
-// GSAP ScrollTrigger + Native Scroll + 8K Canvas
+// BERLIN TECHNO SCROLLYTELLING — CORE ENGINE v3
+// GSAP ScrollTrigger + Native Scroll
+// Optimized for mobile: smooth scrub, stable viewport, clean rendering
 // =============================================
 console.log("INITIALIZING VOID...");
 
@@ -21,10 +22,13 @@ const state = {
     currentFrame: 1,
     loadedImages: new Map(),
     isPreloading: true,
-    canvasMetrics: { width: 0, height: 0 }
+    canvasW: 0,
+    canvasH: 0,
+    dpr: 1,
+    lastWidth: 0, // Track width to avoid resize on address bar toggle
 };
 
-// Memory Management — wider window for smoother scrubbing
+// Memory Management
 const MEMORY_AHEAD = 80;
 const MEMORY_BEHIND = 40;
 
@@ -36,45 +40,59 @@ const progressBar = document.querySelector('.progress-bar');
 const progressPercent = document.querySelector('.progress-percent');
 
 // --- CANVAS SIZING ---
-function resizeCanvas() {
+// On mobile, the address bar showing/hiding changes innerHeight.
+// We only do a full resize when the WIDTH changes to avoid constant reflows.
+function resizeCanvas(force) {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    // On mobile, cap DPR at 1 to avoid over-stretching low-res source frames
-    // On desktop, use native DPR up to 2
-    const isMobile = w <= 768;
-    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
-    state.canvasMetrics.width = w;
-    state.canvasMetrics.height = h;
+    // Skip resize if only height changed (mobile address bar toggle)
+    if (!force && w === state.lastWidth && state.canvasW > 0) {
+        // Just update the drawing metrics for the new height
+        state.canvasH = h;
+        return;
+    }
 
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    state.lastWidth = w;
+    // Use DPR 1 on mobile to match low-res source frames, 2 on desktop
+    state.dpr = w <= 768 ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
-    // High-quality smoothing prevents hard pixel edges during scaling
+    state.canvasW = w;
+    state.canvasH = h;
+
+    canvas.width = w * state.dpr;
+    canvas.height = h * state.dpr;
+    ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
     drawFrame(Math.round(state.currentFrame));
 }
 
+// Also handle orientation change cleanly
 let resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(resizeCanvas, 150);
+    resizeTimer = setTimeout(() => resizeCanvas(false), 200);
+});
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => resizeCanvas(true), 300);
 });
 
 // --- RENDER LOOP ---
-let lastDrawnFrame = -1;
+// Use interpolation for ultra-smooth frame transitions
+let displayFrame = 1;
+const LERP_SPEED = 0.3; // Smoothing factor
 
 function renderLoop() {
-    const frameIndex = Math.round(state.currentFrame);
+    // Smoothly interpolate toward the target frame for buttery motion
+    const target = state.currentFrame;
+    displayFrame += (target - displayFrame) * LERP_SPEED;
 
-    if (frameIndex !== lastDrawnFrame) {
-        drawFrame(frameIndex);
-        manageMemory(frameIndex);
-        lastDrawnFrame = frameIndex;
-    }
+    const frameIndex = Math.max(1, Math.min(config.frameCount, Math.round(displayFrame)));
+
+    drawFrame(frameIndex);
+    manageMemory(frameIndex);
 
     requestAnimationFrame(renderLoop);
 }
@@ -82,24 +100,32 @@ function renderLoop() {
 function drawFrame(index) {
     if (!ctx) return;
     const img = state.loadedImages.get(index);
+    if (!img || !img.complete || img.naturalWidth === 0) return;
 
-    if (img && img.complete && img.naturalWidth > 0) {
-        const w = state.canvasMetrics.width;
-        const h = state.canvasMetrics.height;
-        const imgW = img.naturalWidth;
-        const imgH = img.naturalHeight;
+    const w = state.canvasW;
+    const h = state.canvasH;
 
-        // Object-fit: cover
-        const ratio = Math.max(w / imgW, h / imgH);
-        const drawW = imgW * ratio;
-        const drawH = imgH * ratio;
-        const x = (w - drawW) / 2;
-        const y = (h - drawH) / 2;
-
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(img, x, y, drawW, drawH);
+    // Recalculate canvas buffer if viewport height changed (address bar)
+    if (canvas.height !== h * state.dpr) {
+        canvas.height = h * state.dpr;
+        ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
     }
+
+    const imgW = img.naturalWidth;
+    const imgH = img.naturalHeight;
+
+    // Object-fit: cover
+    const ratio = Math.max(w / imgW, h / imgH);
+    const drawW = imgW * ratio;
+    const drawH = imgH * ratio;
+    const x = (w - drawW) / 2;
+    const y = (h - drawH) / 2;
+
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, x, y, drawW, drawH);
 }
 
 // --- IMAGE LOADING ---
@@ -166,7 +192,7 @@ async function executePreload() {
 
     state.isPreloading = false;
 
-    resizeCanvas();
+    resizeCanvas(true);
     renderLoop();
     initScrollTrigger();
     initRevealAnimations();
@@ -179,12 +205,13 @@ function initScrollTrigger() {
     gsap.to(state, {
         currentFrame: config.frameCount,
         ease: "none",
-        snap: { currentFrame: 1 },
+        // No snap — snap causes visible jank/stutter on mobile
         scrollTrigger: {
             trigger: "#scroll-container",
             start: "top top",
             end: "bottom bottom",
-            scrub: 0.5,
+            // scrub: true = instant sync (smoothing handled by our LERP)
+            scrub: true,
             invalidateOnRefresh: true,
         }
     });
@@ -202,8 +229,8 @@ function initRevealAnimations() {
             ease: "power3.out",
             scrollTrigger: {
                 trigger: el,
-                start: "top 85%",
-                end: "top 50%",
+                start: "top 88%",
+                end: "top 55%",
                 toggleActions: "play none none reverse",
             }
         });
@@ -244,13 +271,9 @@ function initTicketCards() {
         });
     });
 
-    // CTA button feedback
     const ctaBtn = document.getElementById('cta-get-stamped');
     if (ctaBtn) {
         ctaBtn.addEventListener('click', () => {
-            const activeCard = document.querySelector('.ticket-card.active');
-            const tier = activeCard ? activeCard.getAttribute('data-tier') : 'standard';
-
             ctaBtn.textContent = 'STAMPED ✓';
             ctaBtn.style.background = '#FF3300';
             ctaBtn.style.borderColor = '#FF3300';

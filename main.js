@@ -3,7 +3,7 @@ console.log("INITIALIZING VOID...");
 
 const config = {
     frameCount: 602,
-    preloadCount: 60,
+    preloadCount: 30,
     imagePath: (index) => {
         if (index <= 200) return `./assets/Scene 1/ezgif-frame-${String(index).padStart(3, '0')}.jpg`;
         if (index <= 400) return `./assets/Scene 2/ezgif-frame-${String(index - 200).padStart(3, '0')}.jpg`;
@@ -154,19 +154,21 @@ function manageMemory(currentIndex) {
 // Preload the first batch blocking the UI
 async function executePreload() {
     let loaded = 0;
+    const preloadPromises = [];
 
+    // Load concurrently instead of sequentially
     for (let i = 1; i <= config.preloadCount; i++) {
-        await loadImage(i);
-        loaded++;
-
-        // Update UI
-        const percent = Math.floor((loaded / config.preloadCount) * 100);
-        progressBar.style.width = `${percent}%`;
-        progressPercent.textContent = `${percent}%`;
-
-        // Artificial delay for the aesthetic of the loader
-        await new Promise(r => setTimeout(r, 10));
+        const p = loadImage(i).then(() => {
+            loaded++;
+            // Update UI
+            const percent = Math.floor((loaded / config.preloadCount) * 100);
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+        });
+        preloadPromises.push(p);
     }
+
+    await Promise.all(preloadPromises);
 
     // Preload complete. Remove loader, start render loop.
     preloader.style.transform = 'translateY(-100%)';

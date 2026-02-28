@@ -145,8 +145,8 @@ body {
 }
 
 .panel-4 {
-    height: 200vh;
-    /* Increased from 100vh to ensure final frames are hit before bottom */
+    height: 400vh;
+    /* Increased from 200vh to ensure final frames are hit before bottom */
     justify-content: center;
 }
 

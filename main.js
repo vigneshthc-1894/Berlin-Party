@@ -1,11 +1,10 @@
 // BERLIN TECHNO SCROLLYTELLING LOGIC
 console.log("INITIALIZING VOID...");
 
-// --- CONFIGURATION ---
 const config = {
     frameCount: 450,
     preloadCount: 60,
-    imagePath: (index) => `./assets/frames/frame-${String(index).padStart(3, '0')}.jpg`,
+    imagePath: (index) => `./assets/frames/frame-${String(index).padStart(3, '0')}.jpg?v=3`,
     canvasId: 'hero-lightpass',
     loaderId: 'preloader'
 };

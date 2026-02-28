@@ -2,9 +2,13 @@
 console.log("INITIALIZING VOID...");
 
 const config = {
-    frameCount: 450,
+    frameCount: 602,
     preloadCount: 60,
-    imagePath: (index) => `./assets/frames/frame-${String(index).padStart(3, '0')}.jpg?v=3`,
+    imagePath: (index) => {
+        if (index <= 200) return `./assets/Scene 1/ezgif-frame-${String(index).padStart(3, '0')}.jpg`;
+        if (index <= 400) return `./assets/Scene 2/ezgif-frame-${String(index - 200).padStart(3, '0')}.jpg`;
+        return `./assets/Scene 3/ezgif-frame-${String(index - 400).padStart(3, '0')}.jpg`;
+    },
     canvasId: 'hero-lightpass',
     loaderId: 'preloader'
 };
@@ -12,11 +16,14 @@ const config = {
 // --- STATE ---
 const state = {
     currentFrame: 1,
-    loadedImages: new Map(), // Use Map for faster lookup and potentially easier cleanup
-    imagesToLoad: [], // Queue for background loading
+    loadedImages: new Map(), // Use Map for faster lookup and cleanup
     isPreloading: true,
     canvasMetrics: { width: 0, height: 0 }
 };
+
+// Memory Management bounds
+const MEMORY_AHEAD = 60;
+const MEMORY_BEHIND = 30;
 
 // --- DOM ELEMENTS ---
 const canvas = document.getElementById(config.canvasId);
@@ -59,6 +66,12 @@ function renderLoop() {
     // Only render if the frame actually changed
     if (state.currentFrame !== lastRenderedFrame) {
         renderFrame(state.currentFrame);
+
+        // Manage memory dynamically during scrolling
+        if (!state.isPreloading) {
+            manageMemory(state.currentFrame);
+        }
+
         lastRenderedFrame = state.currentFrame;
     }
     animationFrameId = requestAnimationFrame(renderLoop);
@@ -69,7 +82,7 @@ function renderFrame(index) {
 
     const img = state.loadedImages.get(index);
 
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth !== 0) {
         // Calculate Object-Fit: Cover mathematics
         const w = state.canvasMetrics.width;
         const h = state.canvasMetrics.height;
@@ -88,18 +101,14 @@ function renderFrame(index) {
         ctx.fillStyle = '#000000'; // Brutalist black background fallback
         ctx.fillRect(0, 0, w, h);
         ctx.drawImage(img, x, y, drawW, drawH);
-    } else {
-        // Fallback or loading state if scrubbing too fast
-        // We just leave the canvas or draw a minimal loading indicator
-        // Doing nothing is often better to prevent flashing
     }
 }
 
-// --- IMAGE LOADING (ASYNC / BACKGROUND) ---
-// Function to load a specific image and return a promise
+// --- IMAGE LOADING & MEMORY MANAGEMENT ---
 function loadImage(index) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (state.loadedImages.has(index)) {
+            // Check if it's already requested
             resolve(state.loadedImages.get(index));
             return;
         }
@@ -107,19 +116,39 @@ function loadImage(index) {
         const img = new Image();
         img.src = config.imagePath(index);
 
+        // Immediately set so we don't request it again by sliding window
+        state.loadedImages.set(index, img);
+
         img.onload = () => {
-            state.loadedImages.set(index, img);
             resolve(img);
         };
 
         img.onerror = () => {
-            // If image fails to load, gracefully continue. 
-            // In a real scenario, this might be a missing asset.
             console.warn(`Missing asset: ${img.src}`);
-            state.loadedImages.set(index, null); // Set null to prevent infinite retries
+            state.loadedImages.delete(index);
             resolve(null);
         };
     });
+}
+
+function manageMemory(currentIndex) {
+    const minKeep = Math.max(1, currentIndex - MEMORY_BEHIND);
+    const maxKeep = Math.min(config.frameCount, currentIndex + MEMORY_AHEAD);
+
+    // 1. Unload images outside the window to free memory
+    for (const [key, img] of state.loadedImages.entries()) {
+        if (key < minKeep || key > maxKeep) {
+            img.src = ''; // Wipe source to force GC
+            state.loadedImages.delete(key);
+        }
+    }
+
+    // 2. Load missing images inside the window
+    for (let i = minKeep; i <= maxKeep; i++) {
+        if (!state.loadedImages.has(i)) {
+            loadImage(i);
+        }
+    }
 }
 
 // Preload the first batch blocking the UI
@@ -135,11 +164,11 @@ async function executePreload() {
         progressBar.style.width = `${percent}%`;
         progressPercent.textContent = `${percent}%`;
 
-        // Optional: slight artificial delay for the aesthetic of the loader
+        // Artificial delay for the aesthetic of the loader
         await new Promise(r => setTimeout(r, 10));
     }
 
-    // Preload complete. Remove loader, start render loop and background loading.
+    // Preload complete. Remove loader, start render loop.
     preloader.style.transform = 'translateY(-100%)';
     setTimeout(() => preloader.remove(), 1000);
 
@@ -149,27 +178,8 @@ async function executePreload() {
     resizeCanvas();
     renderLoop();
 
-    // Start lazy loading the rest
-    startBackgroundLoader();
-
     // Initialize Lenis and GSAP now that initial assets are ready
     initScroll();
-}
-
-// Asynchronously load the remaining frames without blocking main thread.
-// Browsers natively handle Image objects gracefully in background.
-async function startBackgroundLoader() {
-    for (let i = config.preloadCount + 1; i <= config.frameCount; i++) {
-        // We just trigger the load. We don't strictly await unless we want to stagger.
-        // Let's stagger slightly to prevent network choke.
-        await loadImage(i);
-
-        // Yield to main thread briefly every 10 frames to ensure zero UI jank
-        if (i % 10 === 0) {
-            await new Promise(resolve => requestAnimationFrame(resolve));
-        }
-    }
-    console.log("ALL FRAMES LOADED IN BACKGROUND.");
 }
 
 // --- SCROLL LOGIC & GSAP ---
@@ -181,7 +191,7 @@ function initScroll() {
         direction: 'vertical',
         gestureDirection: 'vertical',
         smooth: true,
-        smoothTouch: false, // Too heavy for mobile usually, native mobile scroll is fine
+        smoothTouch: false, // Native mobile scroll is fine
         touchMultiplier: 2,
     });
 
@@ -194,7 +204,6 @@ function initScroll() {
     gsap.ticker.lagSmoothing(0);
 
     // GSAP ScrollTrigger to map sequence
-    // The playhead scrubs from frame 1 to 450 based on document height
     gsap.to(state, {
         currentFrame: config.frameCount,
         snap: "currentFrame", // Snap to nearest whole integer frame
@@ -203,11 +212,7 @@ function initScroll() {
             trigger: "#smooth-wrapper",
             start: "top top",
             end: "bottom bottom",
-            scrub: 0.5, // 0.5 scrub adds slight catching up inertia (premium feel)
-            onUpdate: (self) => {
-                // We update currentFrame here automatically via GSAP
-                // renderLoop will pick it up on next rAF
-            }
+            scrub: 0.5 // 0.5 scrub adds slight catching up inertia
         }
     });
 }

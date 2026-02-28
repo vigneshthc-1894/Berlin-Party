@@ -35,12 +35,14 @@ const preloader = document.getElementById(config.loaderId);
 const progressBar = document.querySelector('.progress-bar');
 const progressPercent = document.querySelector('.progress-percent');
 
-// --- CANVAS SIZING (8K SUPPORT) ---
+// --- CANVAS SIZING ---
 function resizeCanvas() {
-    // Allow up to 4x DPR for 8K-class rendering on high-res displays
-    const dpr = Math.min(window.devicePixelRatio || 1, 4);
     const w = window.innerWidth;
     const h = window.innerHeight;
+    // On mobile, cap DPR at 1 to avoid over-stretching low-res source frames
+    // On desktop, use native DPR up to 2
+    const isMobile = w <= 768;
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
     state.canvasMetrics.width = w;
     state.canvasMetrics.height = h;
@@ -49,7 +51,7 @@ function resizeCanvas() {
     canvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Enable high-quality image smoothing for 8K scaling
+    // High-quality smoothing prevents hard pixel edges during scaling
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 

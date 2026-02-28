@@ -138,7 +138,8 @@ function manageMemory(currentIndex) {
     // 1. Unload images outside the window to free memory
     for (const [key, img] of state.loadedImages.entries()) {
         if (key < minKeep || key > maxKeep) {
-            img.src = ''; // Wipe source to force GC
+            // Use 1x1 transparent gif instead of '' to prevent the browser from requesting the base URL
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
             state.loadedImages.delete(key);
         }
     }

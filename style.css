@@ -1,3 +1,7 @@
+/* =============================================
+   BERLIN TECHNO SCROLLYTELLING — BRUTALIST CSS
+   ============================================= */
+
 :root {
     --black: #000000;
     --grey: #E5E5E5;
@@ -11,24 +15,26 @@
     box-sizing: border-box;
 }
 
-html,
+html {
+    overflow-x: hidden;
+}
+
 body {
-    width: 100vw;
-    background-color: transparent;
-    /* Changed from var(--black) to reveal canvas */
+    width: 100%;
+    min-height: 100vh;
+    background-color: #000;
     color: var(--off-white);
     font-family: 'Inter Tight', sans-serif;
     font-weight: 900;
     letter-spacing: -0.03em;
     overflow-x: hidden;
-    overscroll-behavior: none;
-    /* Prevents mobile pull-to-refresh */
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    /* Allow native scrolling — critical for mobile */
 }
 
 /* 
  * NOISE OVERLAY
- * Optimized for mobile: pointer-events none, fixed to viewport to prevent repaints on scroll
  */
 .noise-overlay {
     position: fixed;
@@ -38,14 +44,13 @@ body {
     height: 100vh;
     pointer-events: none;
     z-index: 9999;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opactity='0.15'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
     opacity: 0.12;
     mix-blend-mode: overlay;
 }
 
 /* 
- * CANVAS
- * Must sit underneath everything, sized to the viewport perfectly.
+ * CANVAS — fixed background behind everything
  */
 #hero-lightpass {
     position: fixed;
@@ -54,8 +59,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    object-fit: cover;
-    will-change: transform;
+    display: block;
 }
 
 /* 
@@ -73,7 +77,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 1s cubic-bezier(0.85, 0, 0.15, 1);
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .loader-content {
@@ -95,13 +105,14 @@ body {
     border: var(--border-thickness) solid var(--black);
     background: transparent;
     position: relative;
+    border-radius: 0;
 }
 
 .progress-bar {
     height: 100%;
     width: 0%;
     background: var(--black);
-    transition: width 0.1s linear;
+    transition: width 0.05s linear;
 }
 
 .progress-percent {
@@ -112,60 +123,59 @@ body {
 }
 
 /* 
- * PANELS
+ * SCROLL CONTAINER
+ */
+#scroll-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+}
+
+/* 
+ * PANELS — each creates scrollable space for frame scrubbing
  */
 .panel {
     position: relative;
-    width: 100vw;
-    height: 150vh;
-    /* creates scrollable space */
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     padding: clamp(20px, 5vw, 60px);
-    z-index: 10;
 }
 
-/* Stagger heights for pacing */
-.panel-1 {
-    height: 120vh;
+.panel-hero {
+    height: 150vh;
     justify-content: flex-end;
 }
 
-.panel-2 {
+.panel-kinetic {
     height: 200vh;
     justify-content: center;
 }
 
-.panel-3 {
+.panel-pulse {
     height: 300vh;
-    /* Increased from 150vh to allow more scrub room */
     justify-content: flex-start;
     padding-top: 20vh;
 }
 
-.panel-4 {
+.panel-exit {
     height: 400vh;
-    /* Increased from 200vh to ensure final frames are hit before bottom */
     justify-content: center;
 }
 
+/* 
+ * PANEL CONTENT — Brutalist cards
+ */
 .panel-content {
     background: var(--grey);
     color: var(--black);
     padding: clamp(15px, 4vw, 40px);
     border: var(--border-thickness) solid var(--black);
+    border-radius: 0;
     width: fit-content;
     max-width: 90vw;
     box-shadow: 12px 12px 0px var(--black);
-}
-
-/* Remove border-radius strictly */
-.panel-content,
-.progress-bar-container,
-.cta-button,
-.badge {
-    border-radius: 0;
 }
 
 .right-align {
@@ -190,6 +200,7 @@ body {
     margin-bottom: 2vh;
     text-transform: uppercase;
     font-weight: 700;
+    border-radius: 0;
 }
 
 .headline {
@@ -207,11 +218,12 @@ body {
     letter-spacing: 0.05em;
 }
 
-/* CTA BUTTON (INK STAMP) */
+/* CTA BUTTON — INK STAMP EFFECT */
 .cta-button {
     background: transparent;
     color: var(--black);
     border: calc(var(--border-thickness) * 1.5) solid var(--black);
+    border-radius: 0;
     padding: clamp(15px, 3vw, 30px) clamp(30px, 6vw, 60px);
     font-size: clamp(1.5rem, 4vw, 3rem);
     font-family: inherit;
@@ -225,7 +237,6 @@ body {
     overflow: hidden;
 }
 
-/* Stamp effect on hover */
 .cta-button::after {
     content: '';
     position: absolute;
@@ -247,11 +258,10 @@ body {
     transform: translate(-50%, -50%) scale(1) rotate(0deg);
 }
 
-/* Mobile specific tweaks */
+/* Mobile tweaks */
 @media (max-width: 768px) {
     .panel-content {
         box-shadow: 6px 6px 0px var(--black);
-        /* Smaller shadow on mobile */
     }
 
     .panel {

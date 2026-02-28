@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BERLIN // 04-20</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,400;0,700;0,900;1,400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=3">
+
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis for smooth scroll -->
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+</head>
+
+<body>
+
+    <!-- CSS Grain Overlay (pointer-events: none) -->
+    <div class="noise-overlay"></div>
+
+    <!-- Global Background Canvas -->
+    <canvas id="hero-lightpass"></canvas>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <h1 class="loader-text">INITIALIZING SEQUENCE</h1>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-percent">0%</div>
+        </div>
+    </div>
+
+    <!-- UI Overlay / Scrollytelling content -->
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <section class="panel panel-1">
+                <div class="panel-content">
+                    <div class="badge">ACT_01</div>
+                    <h1 class="headline mask-reveal">INTO<br>THE VOID</h1>
+                    <p class="subtext">BERLIN. 22:00. THE BASS DROPS.</p>
+                </div>
+            </section>
+
+            <section class="panel panel-2">
+                <div class="panel-content right-align">
+                    <div class="badge">ACT_02</div>
+                    <h1 class="headline mask-reveal">PURE<br>KINETIC</h1>
+                    <p class="subtext">145 BPM. NO STOPPING.</p>
+                </div>
+            </section>
+
+            <section class="panel panel-3">
+                <div class="panel-content">
+                    <div class="badge">ACT_03</div>
+                    <h1 class="headline mask-reveal">PULSE<br>STATE</h1>
+                    <p class="subtext">WE SWEAT CONCRETE.</p>
+                </div>
+            </section>
+
+            <section class="panel panel-4">
+                <div class="panel-content center-align">
+                    <h1 class="headline mask-reveal">NO EXIT</h1>
+                    <button class="cta-button">GET STAMPED</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="main.js?v=2"></script>
+</body>
+
+</html>
